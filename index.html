@@ -1,28 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Sorting Visualizer</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sorting Visualizer Pro</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Sorting Visualizer</h1>
+<header>
+<h1>Sorting Visualizer Pro</h1>
+<p>Bubble | Selection | Insertion</p>
+</header>
 
-<div id="array"></div>
+<section class="controls glass">
 
-<button onclick="prevStep()">Previous</button>
-<button onclick="nextStep()">Next</button>
+<div class="input-box">
+<input id="manualInput" placeholder="Enter numbers ex: 5,3,9,1">
+<button onclick="setManualArray()">Use Input</button>
+<button onclick="generateRandom()">Random Input</button>
+</div>
 
-<label>Speed:</label>
-<input type="range" id="speed" min="1" max="100">
+<div class="sort-buttons">
+<button onclick="startSort('bubble')">Bubble Sort</button>
+<button onclick="startSort('selection')">Selection Sort</button>
+<button onclick="startSort('insertion')">Insertion Sort</button>
+</div>
 
-<select id="algo">
-  <option value="bubble">Bubble Sort</option>
-  <option value="selection">Selection Sort</option>
-  <option value="insertion">Insertion Sort</option>
-</select>
+<div class="step-controls">
+<button onclick="prevStep()">⏮ Previous</button>
+<button onclick="nextStep()">⏭ Next</button>
+<button onclick="toggleAnimation()">▶ Play/Pause</button>
+</div>
 
-<button onclick="generateSteps()">Start</button>
+<div class="speed-control">
+<label>Animation Speed</label>
+<input type="range" min="100" max="2000" value="500" id="speedSlider">
+</div>
+
+</section>
+
+<section class="visualizer glass">
+<div id="array-container"></div>
+</section>
+
+<section class="complexity glass">
+<h2>Complexity Visualization</h2>
+<table>
+<tr>
+<th>Algorithm</th>
+<th>Best</th>
+<th>Average</th>
+<th>Worst</th>
+<th>Space</th>
+</tr>
+<tr>
+<td>Bubble</td>
+<td>O(n)</td>
+<td>O(n²)</td>
+<td>O(n²)</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Selection</td>
+<td>O(n²)</td>
+<td>O(n²)</td>
+<td>O(n²)</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Insertion</td>
+<td>O(n)</td>
+<td>O(n²)</td>
+<td>O(n²)</td>
+<td>O(1)</td>
+</tr>
+</table>
+</section>
+
+<section class="algorithms glass">
+<h2>Algorithms Explained</h2>
+
+<div class="card">
+<h3>Bubble Sort</h3>
+<p>
+Repeatedly compares adjacent elements and swaps them if they are in wrong order.
+Largest element "bubbles" to the end after each pass.
+Good for small/nearly sorted data.
+</p>
+<pre>
+Compare adjacent elements
+Swap if needed
+Repeat until sorted
+</pre>
+</div>
+
+<div class="card">
+<h3>Selection Sort</h3>
+<p>
+Finds smallest element and places it at correct position in each iteration.
+Performs fewer swaps.
+Useful when swapping is costly.
+</p>
+<pre>
+Find minimum
+Swap with front
+Repeat for remaining array
+</pre>
+</div>
+
+<div class="card">
+<h3>Insertion Sort</h3>
+<p>
+Builds sorted portion one element at a time.
+Excellent for small or nearly sorted inputs.
+Often best among these three.
+</p>
+<pre>
+Pick element
+Insert into sorted part
+Shift larger values
+Repeat
+</pre>
+</div>
+
+</section>
+
+<section class="best-technique glass">
+<h2>Best Technique Among These Three</h2>
+<div class="winner">
+<h3>🏆 Insertion Sort</h3>
+<p>
+Generally preferred among these three because:
+</p>
+<ul>
+<li>Very fast for nearly sorted data</li>
+<li>Less overhead</li>
+<li>Adaptive algorithm</li>
+<li>Used inside advanced hybrid sorts</li>
+</ul>
+</div>
+</section>
 
 <script src="script.js"></script>
 </body>

@@ -1,123 +1,135 @@
-let arr = [];
-let steps = [];
-let currentStep = 0;
-let speed = 50;
+let arr=[45,20,70,12,90,33];
+let steps=[];
+let currentStep=0;
+let playing=false;
+let timer;
 
-// Generate random array
-function generateArray() {
-  arr = [];
-  for (let i = 0; i < 20; i++) {
-    arr.push(Math.floor(Math.random() * 100) + 10);
-  }
+function renderArray(step=arr){
+const container=document.getElementById('array-container');
+container.innerHTML='';
+
+step.forEach(obj=>{
+let bar=document.createElement('div');
+bar.classList.add('bar');
+if(obj.state) bar.classList.add(obj.state);
+bar.style.height=obj.value*3+'px';
+bar.innerHTML=`<span>${obj.value}</span>`;
+container.appendChild(bar);
+});
 }
 
-// Render bars
-function render(array) {
-  const container = document.getElementById("array");
-  container.innerHTML = "";
-
-  array.forEach(value => {
-    const bar = document.createElement("div");
-    bar.classList.add("bar");
-    bar.style.height = value * 3 + "px";
-    container.appendChild(bar);
-  });
+function snapshot(array,highlight=[]){
+steps.push(
+array.map((v,i)=>({
+value:v,
+state:
+highlight.includes(i)
+? 'selected'
+: ''
+}))
+);
 }
 
-// Bubble Sort Steps
-function bubbleSortSteps(array) {
-  let temp = [...array];
-
-  for (let i = 0; i < temp.length; i++) {
-    for (let j = 0; j < temp.length - i - 1; j++) {
-      if (temp[j] > temp[j + 1]) {
-        [temp[j], temp[j + 1]] = [temp[j + 1], temp[j]];
-        steps.push([...temp]);
-      }
-    }
-  }
+function generateRandom(){
+arr=[];
+for(let i=0;i<8;i++)
+arr.push(Math.floor(Math.random()*90)+10);
+renderArray(
+arr.map(v=>({value:v}))
+);
 }
 
-// Selection Sort Steps
-function selectionSortSteps(array) {
-  let temp = [...array];
-
-  for (let i = 0; i < temp.length; i++) {
-    let minIndex = i;
-
-    for (let j = i + 1; j < temp.length; j++) {
-      if (temp[j] < temp[minIndex]) {
-        minIndex = j;
-      }
-    }
-
-    if (minIndex !== i) {
-      [temp[i], temp[minIndex]] = [temp[minIndex], temp[i]];
-      steps.push([...temp]);
-    }
-  }
+function setManualArray(){
+let input=document
+.getElementById('manualInput')
+.value.split(',')
+.map(Number);
+arr=input;
+renderArray(arr.map(v=>({value:v})));
 }
 
-// Insertion Sort Steps
-function insertionSortSteps(array) {
-  let temp = [...array];
+function startSort(type){
+steps=[];
+currentStep=0;
+let copy=[...arr];
 
-  for (let i = 1; i < temp.length; i++) {
-    let key = temp[i];
-    let j = i - 1;
+if(type==='bubble')bubble(copy);
+if(type==='selection')selection(copy);
+if(type==='insertion')insertion(copy);
 
-    while (j >= 0 && temp[j] > key) {
-      temp[j + 1] = temp[j];
-      j--;
-      steps.push([...temp]);
-    }
-
-    temp[j + 1] = key;
-    steps.push([...temp]);
-  }
+renderArray(steps[0]);
 }
 
-// Generate steps based on selected algorithm
-function generateSteps() {
-  steps = [];
-  currentStep = 0;
-
-  generateArray();
-
-  let algo = document.getElementById("algo").value;
-
-  if (algo === "bubble") bubbleSortSteps(arr);
-  else if (algo === "selection") selectionSortSteps(arr);
-  else if (algo === "insertion") insertionSortSteps(arr);
-
-  render(arr);
+function bubble(a){
+for(let i=0;i<a.length;i++)
+for(let j=0;j<a.length-i-1;j++){
+snapshot(a,[j,j+1]);
+if(a[j]>a[j+1])
+[a[j],a[j+1]]=[a[j+1],a[j]];
+snapshot(a,[j,j+1]);
+}
 }
 
-// Next step
-function nextStep() {
-  if (currentStep < steps.length) {
-    render(steps[currentStep]);
-    currentStep++;
-  }
+function selection(a){
+for(let i=0;i<a.length;i++){
+let min=i;
+for(let j=i+1;j<a.length;j++){
+snapshot(a,[min,j]);
+if(a[j]<a[min])
+min=j;
+}
+[a[i],a[min]]=[a[min],a[i]];
+snapshot(a,[i,min]);
+}
 }
 
-// Previous step
-function prevStep() {
-  if (currentStep > 0) {
-    currentStep--;
-    render(steps[currentStep]);
-  }
+function insertion(a){
+for(let i=1;i<a.length;i++){
+let key=a[i];
+let j=i-1;
+while(j>=0&&a[j]>key){
+a[j+1]=a[j];
+snapshot(a,[j,j+1]);
+j--;
+}
+a[j+1]=key;
+snapshot(a,[j+1]);
+}
 }
 
-// Speed control
-document.getElementById("speed").oninput = function () {
-  speed = this.value;
-};
-
-// Optional auto play (uses speed)
-function play() {
-  if (currentStep >= steps.length) return;
-
-  nextStep();
-  setTimeout(play, 200 - speed);
+function nextStep(){
+if(currentStep<steps.length-1){
+currentStep++;
+renderArray(steps[currentStep]);
 }
+}
+
+function prevStep(){
+if(currentStep>0){
+currentStep--;
+renderArray(steps[currentStep]);
+}
+}
+
+function toggleAnimation(){
+if(!playing){
+playing=true;
+play();
+}
+else{
+playing=false;
+clearTimeout(timer);
+}
+}
+
+function play(){
+if(!playing||currentStep>=steps.length-1)
+return;
+nextStep();
+let speed=
+document.getElementById('speedSlider').value;
+
+timer=setTimeout(play,speed);
+}
+
+renderArray(arr.map(v=>({value:v})));
